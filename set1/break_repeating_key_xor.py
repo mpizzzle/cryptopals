@@ -18,7 +18,7 @@ def get_candidate_key_length(file, accuracy):
 
 	return candidate_length
 
-def get_candidate_xor_byte(transposed_block):
+def get_candidate_key_byte(transposed_block):
 	candidate = ''
 	candidate_frequency = 0
 
@@ -44,7 +44,7 @@ with open('files/6.txt') as f:
 key_length = get_candidate_key_length(file, 10)
 split_file = [file[i:i + key_length] for i in range(0, len(file), key_length)]
 transposed_blocks = [''.join([block[x] for block in split_file[:len(split_file)- 1]]) for x in range(key_length)]
-key = ''.join([get_candidate_xor_byte(transposed_block) for transposed_block in transposed_blocks])
+key = ''.join([get_candidate_key_byte(transposed_block) for transposed_block in transposed_blocks])
 
 print key
 print decrypt(key, file)

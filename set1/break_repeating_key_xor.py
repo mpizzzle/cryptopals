@@ -12,6 +12,7 @@ def get_candidate_key_length(file, accuracy):
 	for key_length in range(2, 40):
 		this_distance = sum([distance(file[key_length * x:key_length * (x + 1)], file[key_length * (x + 1):key_length * (x + 2)]) for x in range(accuracy)])
 		average_distance = this_distance / float(key_length * (accuracy))
+
 		if average_distance < candidate_distance:
 			candidate_distance = average_distance
 			candidate_length = key_length
@@ -22,17 +23,14 @@ def get_candidate_key_byte(transposed_block):
 	candidate = ''
 	candidate_frequency = 0
 
-	for x in range(128):
-		frequency = 0
-		plaintext = ''.join([chr(x ^ ord(a)) for a in transposed_block])
-
-		for char in plaintext:
-			if char in frequent_letters:
-				frequency += 1
+	for c in range(128):
+		plaintext = ''.join([chr(c ^ ord(a)) for a in transposed_block])
+		frequency = sum([plaintext.count(frequent_letters[n]) for n in range(len(frequent_letters))])
 
 		if frequency > candidate_frequency:
-			candidate = chr(x)
+			candidate = chr(c)
 			candidate_frequency = frequency
+
 	return candidate
 
 def decrypt(key, msg):
@@ -43,8 +41,8 @@ with open('files/6.txt') as f:
 
 key_length = get_candidate_key_length(file, 10)
 split_file = [file[i:i + key_length] for i in range(0, len(file), key_length)]
-transposed_blocks = [''.join([block[x] for block in split_file[:len(split_file)- 1]]) for x in range(key_length)]
-key = ''.join([get_candidate_key_byte(transposed_block) for transposed_block in transposed_blocks])
+transposed_blocks = [''.join([block[x] for block in split_file[:len(split_file) - 1]]) for x in range(key_length)]
+key = ''.join([get_candidate_key_byte(block) for block in transposed_blocks])
 
 print key
 print decrypt(key, file)

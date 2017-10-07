@@ -35,14 +35,21 @@ def get_candidate_key_byte(transposed_block):
 
 def decrypt(key, msg):
 	return ''.join([chr(ord(key[i % len(key)]) ^ ord(char)) for i, char in enumerate(msg)])
+	
+def get_key(file):
+	key_length = get_candidate_key_length(file, 10)
+	split_file = [file[i:i + key_length] for i in range(0, len(file), key_length)]
+	transposed_blocks = [''.join([block[x] for block in split_file[:len(split_file) - 1]]) for x in range(key_length)]
+	return ''.join([get_candidate_key_byte(block) for block in transposed_blocks])
 
 with open('files/6.txt') as f:
     file = f.read().decode("base64")
 
-key_length = get_candidate_key_length(file, 10)
-split_file = [file[i:i + key_length] for i in range(0, len(file), key_length)]
-transposed_blocks = [''.join([block[x] for block in split_file[:len(split_file) - 1]]) for x in range(key_length)]
-key = ''.join([get_candidate_key_byte(block) for block in transposed_blocks])
+with open('files/p059_cipher.txt') as f2:
+    project_euler_59 = ''.join([chr(int(c)) for c in f2.read().split(',')])
 
-print key
-print decrypt(key, file)
+key1 = get_key(file)
+key2 = get_key(project_euler_59)
+
+print "key: \"" + key1 + "\"\n" + decrypt(key1, file)
+print "key: \"" + key2 + "\"\n" + decrypt(key2, project_euler_59)

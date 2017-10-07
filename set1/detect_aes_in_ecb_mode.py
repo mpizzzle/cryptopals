@@ -1,4 +1,3 @@
-from Crypto.Cipher import AES
 from sets import Set
 
 with open('files/8.txt') as f:

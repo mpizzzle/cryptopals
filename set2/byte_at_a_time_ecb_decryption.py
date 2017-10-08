@@ -1,19 +1,12 @@
 import sys
 from Crypto.Cipher import AES
 from Crypto import Random
-from Crypto.Random import random
 
 def random_key():
     return Random.new().read(AES.block_size)
 
 def encryption_oracle(key, msg):
-    plaintext = msg
-
-    if len(msg) % 16 != 0:
-        for i in range(16 - (len(msg) % 16)):
-            msg += '\x04'
-
-    return AES.new(key, AES.MODE_ECB).encrypt(msg)
+    return AES.new(key, AES.MODE_ECB).encrypt(msg + ''.join(['\x04' for i in range(16 - (len(msg) % 16))]) if len(msg) % 16 != 0 else msg)
 
 pt1 = "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkg\n"
 pt2 = "aGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBq\n"

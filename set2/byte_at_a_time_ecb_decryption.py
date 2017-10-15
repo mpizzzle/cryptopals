@@ -6,7 +6,7 @@ def random_key():
     return Random.new().read(AES.block_size)
 
 def encryption_oracle(key, msg):
-    return AES.new(key, AES.MODE_ECB).encrypt(msg + ''.join(['\x04' for i in range(16 - (len(msg) % 16))]) if len(msg) % 16 != 0 else msg)
+    return AES.new(key, AES.MODE_ECB).encrypt(msg + ''.join(['\x04' for i in range(AES.block_size - (len(msg) % AES.block_size))]) if len(msg) % AES.block_size != 0 else msg)
 
 pt1 = "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkg\n"
 pt2 = "aGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBq\n"

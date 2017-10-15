@@ -15,10 +15,10 @@ def encryption_oracle(key, msg):
     for i in range(random.randint(5, 10)):
         plaintext += '\x04'
 
-    mod = len(plaintext) % 16
+    mod = len(plaintext) % AES.block_size
 
     if mod != 0:
-        for i in range(16 - mod):
+        for i in range(AES.block_size - mod):
             plaintext = plaintext + '\x04'
 
     if random.randint(0, 1):
@@ -34,7 +34,7 @@ with open('files/10_decrypted.txt') as f:
     file = f.read()
 
 ciphertext = encryption_oracle(random_key(), file)
-blocks = [ciphertext[i:i + 16] for i in range(0, len(ciphertext), 16)]
+blocks = [ciphertext[i:i + AES.block_size] for i in range(0, len(ciphertext), AES.block_size)]
 
 if len(blocks) != len(Set(blocks)):
     print '1'

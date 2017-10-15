@@ -6,14 +6,10 @@ candidate = ""
 candidate_frequency = 0
 
 for plaintext in [''.join([chr(x ^ ord(a)) for a in hex.decode("hex")]) for x in range(128)]:
-	frequency = 0
+    frequency = sum([plaintext.count(frequent_letters[n]) for n in range(len(frequent_letters))])
 
-	for char in plaintext:
-		if char in frequent_letters:
-			frequency += 1
-	
-	if frequency > candidate_frequency:
-		candidate = plaintext
-		candidate_frequency = frequency
-		
+    if frequency > candidate_frequency:
+        candidate = plaintext
+        candidate_frequency = frequency
+
 print candidate

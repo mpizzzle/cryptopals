@@ -9,34 +9,42 @@ pt3 = "dXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUg\n"
 pt4 = "YnkK"
 
 key = Random.new().read(AES.block_size)
-plaintext = str(pt1 + pt2 + pt3 + pt4).decode("base64") # no peeking!
-randbuffer = Random.new().read(55)
+pt = str(pt1 + pt2 + pt3 + pt4).decode("base64") # no peeking!
+r = Random.new().read(random.randint(1, 100))
+aes_bs = AES.block_size
 
 def encryption_oracle(msg):
-    return AES.new(key, AES.MODE_ECB).encrypt(randbuffer + msg + plaintext + ''.join(['\x04' for i in range(AES.block_size - (len(randbuffer + msg + plaintext) % AES.block_size))]) if len(randbuffer + msg + plaintext) % AES.block_size != 0 else randbuffer + msg + plaintext)
+    return AES.new(key, AES.MODE_ECB).encrypt(r + msg + pt + ''.join(['\x04' for i in range(aes_bs - (len(r + msg + pt) % aes_bs))]) if len(r + msg + pt) % aes_bs != 0 else r + msg + pt)
 
 def find_len_of_random_prefix():
-    prefix_len = 0
-    a = encryption_oracle('')
-    b = encryption_oracle('a')
+    estimate = -1
 
-    a_blocks = [a[i:i + AES.block_size] for i in range(0, len(a), AES.block_size)]
-    b_blocks = [b[i:i + AES.block_size] for i in range(0, len(b), AES.block_size)]
+    for i in range(aes_bs):
+        prefix_len = 0
+        a = encryption_oracle(''.join('\x00' for j in range(i)))
+        b = encryption_oracle(''.join("\x00" for j in range(i + 1)))
+        a_blocks = [a[j:j + aes_bs] for j in range(0, len(a), aes_bs)]
+        b_blocks = [b[j:j + aes_bs] for j in range(0, len(b), aes_bs)]
 
-    for block_a, block_b in zip(a_blocks, b_blocks):
-        if block_a == block_b:
-            prefix_len += AES.block_size
+        for block_a, block_b in zip(a_blocks, b_blocks):
+            if block_a == block_b:
+                prefix_len += aes_bs
+            else:
+                if estimate == -1:
+                    estimate = prefix_len
+                if estimate != prefix_len:
+                    return estimate + aes_bs - i
+                break
+    return 0
 
-    return prefix_len
+prefix = find_len_of_random_prefix()
+mod = aes_bs - prefix % aes_bs
+buf = aaa = "AAAAAAAAAAAAAAA"
+aa = ''.join("A" for i in range(mod))
 
+for i in range(len(encryption_oracle('')) - prefix):
+    dict = {encryption_oracle(aa + aaa[i:] + chr(j))[prefix + mod : prefix + mod + aes_bs] : chr(j) for j in range(0xff)}
+    cipher = encryption_oracle(aa + buf[i % aes_bs:])
+    aaa += dict[cipher[prefix + mod + (aes_bs * (i / aes_bs)) : prefix + mod + (aes_bs * ((i + aes_bs) / aes_bs))]]
 
-prefix_len = 55#find_len_of_random_prefix()
-mod = AES.block_size - prefix_len % AES.block_size
-aaa = "AAAAAAAAAAAAAAA"
-buf = aaa + ''.join("A" for i in range(mod))
-
-for i in range(len(encryption_oracle('')) - prefix_len):
-    dict = {encryption_oracle(''.join("A" for i in range(mod)) + aaa[i:] + chr(j))[prefix_len + mod : prefix_len + mod + AES.block_size] : chr(j) for j in range(0xff)}
-    cipher = encryption_oracle(buf[i % AES.block_size:])
-    aaa += dict[cipher[prefix_len + mod + (AES.block_size * (i / AES.block_size)) : prefix_len + mod + (AES.block_size * ((i + AES.block_size) / AES.block_size))]]
-print aaa[AES.block_size - 1:]
+print aaa[aes_bs - 1:]

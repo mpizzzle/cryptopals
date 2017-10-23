@@ -10,18 +10,19 @@ pt4 = "YnkK"
 
 key = Random.new().read(AES.block_size)
 plaintext = str(pt1 + pt2 + pt3 + pt4).decode("base64") # no peeking!
-rand_buffer = Random.new().read(random.randint(1, 100))
+rand_buffer = Random.new().read(random.randint(0, 100))
 
 def encryption_oracle(msg):
     padding = ''
 
     if len(rand_buffer + msg + plaintext) % AES.block_size != 0:
-        padding += ''.join(['\x04' for i in range(AES.block_size - (len(rand_buffer + msg + plaintext) % AES.block_size))])
+        padding = ''.join(['\x04' for i in range(AES.block_size - (len(rand_buffer + msg + plaintext) % AES.block_size))])
 
     return AES.new(key, AES.MODE_ECB).encrypt(rand_buffer + msg + plaintext + padding)
 
 def find_len_of_random_prefix():
     prefix_len = -1
+    a_blocks = b_blocks = []
 
     for i in range(AES.block_size):
         estimate = 0
@@ -39,7 +40,8 @@ def find_len_of_random_prefix():
                 if prefix_len != estimate:
                     return prefix_len + AES.block_size - i
                 break
-    return 0
+
+    return sum([AES.block_size if a == b else 0 for a, b in zip(a_blocks, b_blocks)])
 
 prefix = find_len_of_random_prefix()
 mod = AES.block_size - prefix % AES.block_size

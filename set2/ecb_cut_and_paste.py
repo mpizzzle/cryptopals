@@ -7,19 +7,19 @@ def random_key():
 
 key = random_key()
 
-def encrypt(key, msg):
-    return AES.new(key, AES.MODE_ECB).encrypt(msg + ''.join(['\x04' for i in range(AES.block_size - (len(msg) % AES.block_size      ))]) if len(msg) % AES.block_size != 0 else msg)
+def encrypt(msg):
+    return AES.new(key, AES.MODE_ECB).encrypt(msg + ''.join(['\x04' for i in range(AES.block_size - (len(msg) % AES.block_size))]) if len(msg) % AES.block_size != 0 else msg)
 
-def decrypt_and_parse(key, cipher):
+def decrypt_and_parse(cipher):
     return parse_string_to_dict(AES.new(key, AES.MODE_ECB).decrypt(cipher))
 
 def parse_string_to_dict(token):
     return {entry.split('=')[0] : entry.split('=')[1] for entry in token.split('&')}
 
 def profile_for(email):
-    email_entry = "email=" + re.sub("[&|=]", '', email)
-    cipher =  encrypt(key, email_entry)
-    return decrypt_and_parse(key, cipher)
+    return encrypt("email=" + re.sub("[&|=]", '', email) + "&uid=10&role=user")
 
-encoded_user_profile = "michael770211@gmail.com&uid=10&role=admin"
-print profile_for(encoded_user_profile)
+admin_cipher = profile_for("\x04\x04\x04\x04\x04\x04\x04\x04\x04\x04admin\x04\x04\x04\x04\x04\x04\x04\x04\x04\x04\x04")
+email_cipher = profile_for("michael770211@gmail.com\x04\x04\x04\x04\x04\x04")
+
+print decrypt_and_parse(email_cipher[:AES.block_size * 3] + admin_cipher[AES.block_size : 2 * AES.block_size])

@@ -13,14 +13,10 @@ plaintext = str(pt1 + pt2 + pt3 + pt4).decode("base64") # no peeking!
 rand_buffer = Random.new().read(random.randint(0, 100))
 
 def encryption_oracle(msg):
-    padding = ''
+    pad_len = AES.block_size - (len(rand_buffer + msg + plaintext) % AES.block_size)
+    return AES.new(key, AES.MODE_ECB).encrypt(rand_buffer + msg + plaintext + ''.join([chr(pad_len) for i in range(pad_len)]))
 
-    if len(rand_buffer + msg + plaintext) % AES.block_size != 0:
-        padding = ''.join(['\x04' for i in range(AES.block_size - (len(rand_buffer + msg + plaintext) % AES.block_size))])
-
-    return AES.new(key, AES.MODE_ECB).encrypt(rand_buffer + msg + plaintext + padding)
-
-def find_len_of_random_prefix():
+def len_of_prefix():
     prefix_len = -1
     a_blocks = b_blocks = []
 
@@ -43,12 +39,17 @@ def find_len_of_random_prefix():
 
     return sum([AES.block_size if a == b else 0 for a, b in zip(a_blocks, b_blocks)])
 
-prefix = find_len_of_random_prefix()
+def len_of_padding():
+    for i in range(AES.block_size):
+        if len(encryption_oracle(''.join('\x00' for j in range(i)))) != len(encryption_oracle(''.join('\x00' for j in range(i + 1)))):
+            return i + 1
+
+prefix = len_of_prefix()
 mod = AES.block_size - prefix % AES.block_size
 buf = aaa = "AAAAAAAAAAAAAAA"
 aa = ''.join("A" for i in range(mod))
 
-for i in range(len(encryption_oracle('')) - prefix):
+for i in range(len(encryption_oracle('')) - prefix - len_of_padding()):
     dict = {encryption_oracle(aa + aaa[i:] + chr(j))[mod + prefix : mod + prefix + AES.block_size] : chr(j) for j in range(0xff)}
     cipher = encryption_oracle(aa + buf[i % AES.block_size:])
     aaa += dict[cipher[mod + prefix + (AES.block_size * (i / AES.block_size)) : mod + prefix + (AES.block_size * ((i + AES.block_size) / AES.block_size))]]

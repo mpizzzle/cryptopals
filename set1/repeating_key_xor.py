@@ -1,5 +1,3 @@
-import sys
-
 def encrypt(key, msg):
     return ''.join([chr(ord(key[i % len(key)]) ^ ord(char)) for i, char in enumerate(msg)])
 

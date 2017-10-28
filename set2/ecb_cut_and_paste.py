@@ -8,7 +8,8 @@ def random_key():
 key = random_key()
 
 def encrypt(msg):
-    return AES.new(key, AES.MODE_ECB).encrypt(msg + ''.join(['\x04' for i in range(AES.block_size - (len(msg) % AES.block_size))]) if len(msg) % AES.block_size != 0 else msg)
+    pad_len = AES.block_size - (len(msg) % AES.block_size)
+    return AES.new(key, AES.MODE_ECB).encrypt(msg + ''.join([chr(pad_len) for i in range(pad_len)]))
 
 def decrypt_and_parse(cipher):
     return parse_string_to_dict(AES.new(key, AES.MODE_ECB).decrypt(cipher))

@@ -1,5 +1,3 @@
-import sys
-
 with open('files/4.txt') as f:
     hex_strings = f.read().splitlines()
 

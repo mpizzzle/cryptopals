@@ -1,12 +1,10 @@
-import sys
-
 frequent_letters = "etaoi ETAOI"
 
 def distance(str1, str2):
     return ''.join([bin(ord(a) ^ ord(b)) for a, b in zip(str1, str2)]).count('1')
 
 def get_candidate_key_length(file, accuracy):
-    candidate_distance = sys.float_info.max
+    candidate_distance = 9999999
     candidate_length = 0
 
     for key_length in range(2, 40):
@@ -23,7 +21,7 @@ def get_candidate_key_byte(transposed_block):
     candidate = ''
     candidate_frequency = 0
 
-    for c in range(128):
+    for c in range(0xff):
         plaintext = ''.join([chr(c ^ ord(a)) for a in transposed_block])
         frequency = sum([plaintext.count(frequent_letters[n]) for n in range(len(frequent_letters))])
 

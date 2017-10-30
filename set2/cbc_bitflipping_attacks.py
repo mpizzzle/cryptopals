@@ -2,11 +2,8 @@ import re
 from Crypto.Cipher import AES
 from Crypto import Random
 
-def random_key():
-    return Random.new().read(AES.block_size)
-
-key = random_key()
-iv  = random_key()
+key = Random.new().read(AES.block_size)
+iv  = Random.new().read(AES.block_size)
 
 def encrypt(msg):
     pad_len = AES.block_size - (len(msg) % AES.block_size)

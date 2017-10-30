@@ -5,10 +5,11 @@ def pkcs7_padding(msg):
     return msg + ''.join([chr(pad_len) for x in range(pad_len)])
 
 def pkcs7_padding_stripper(msg):
-    for char in msg[:len(msg) - ord(msg[len(msg) - 1]) : -1]:
-        if char != msg[len(msg) - 1]:
+    if ord(msg[len(msg) - 1]) > AES.block_size or ord(msg[len(msg) - 1]) == 0:
+        raise Exception("invalid pkcs7 padding")
+    for c in msg[:len(msg) - ord(msg[len(msg) - 1]) - 1 : -1]:
+        if c != msg[len(msg) - 1]:
             raise Exception("invalid pkcs7 padding")
-
     return msg[:len(msg) - ord(msg[len(msg) - 1])]
 
 plaintext = "YELLOW SUBMARINE"

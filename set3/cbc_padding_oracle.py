@@ -13,18 +13,18 @@ def encryption_oracle():
     pad_len = AES.block_size - (len(plaintext) % AES.block_size)
     return AES.new(key, AES.MODE_CBC, iv).encrypt(plaintext + ''.join([chr(pad_len) for i in range(pad_len)]))
 
-def pkcs7_padding_validator(msg, strip_mode):
+def pkcs7_padding_oracle(msg, strip_mode):
     if ord(msg[len(msg) - 1]) > AES.block_size or ord(msg[len(msg) - 1]) == 0:
-        return False
+        return False if not strip_mode else ""
 
     for c in msg[:len(msg) - ord(msg[len(msg) - 1]) - 1 : -1]:
         if c != msg[len(msg) - 1]:
-            return False
+            return False if not strip_mode else ""
 
     return True if not strip_mode else msg[:len(msg) - ord(msg[len(msg) - 1])]
 
 def decrypt_and_validate_padding(ciphertext):
-    return pkcs7_padding_validator(AES.new(key, AES.MODE_CBC, iv).decrypt(ciphertext), False)
+    return pkcs7_padding_oracle(AES.new(key, AES.MODE_CBC, iv).decrypt(ciphertext), False)
 
 ciphertext = iv + encryption_oracle()
 plaintext = ""
@@ -35,29 +35,29 @@ for b_idx in reversed(range((len(ciphertext) / AES.block_size) - 1)):
     padding = []
 
     for i in range(AES.block_size):
-        byte = block[AES.block_size - i - 1]
+        guessed_byte = block[AES.block_size - i - 1]
         found = False
 
-        for j in range(0xff):
-            if chr(j) != byte:
-                block[AES.block_size - i - 1] = chr(j)
+        for c in range(0xff):
+            if chr(c) != guessed_byte:
+                block[AES.block_size - i - 1] = chr(c)
                 blocks[b_idx] = ''.join(block)
 
                 if decrypt_and_validate_padding(''.join(blocks[:b_idx + 2])):
-                    plaintext += chr(j ^ ord(byte) ^ (i + 1))
-                    padding.append(j)
+                    plaintext += chr(c ^ ord(guessed_byte) ^ (i + 1))
+                    padding.append(c)
 
-                    for k in range(i + 1):
-                        block[AES.block_size - k - 1] = chr(padding[k] ^ (k + 1) ^ (i + 2))
+                    for p in range(i + 1):
+                        block[AES.block_size - p - 1] = chr(padding[p] ^ (p + 1) ^ (i + 2))
 
                     found = True
                     break
 
         if not found:
             plaintext += chr(i + 1)
-            padding.append(ord(byte))
+            padding.append(ord(guessed_byte))
 
-            for k in range(i + 1):
-                block[AES.block_size - k - 1] = chr(padding[k] ^ (k + 1) ^ (i + 2))
+            for p in range(i + 1):
+                block[AES.block_size - p - 1] = chr(padding[p] ^ (p + 1) ^ (i + 2))
 
-print pkcs7_padding_validator(plaintext[::-1], True).decode("base64")
+print pkcs7_padding_oracle(plaintext[::-1], True).decode("base64")

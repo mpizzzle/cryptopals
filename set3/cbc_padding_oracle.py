@@ -13,24 +13,18 @@ def encryption_oracle():
     pad_len = AES.block_size - (len(plaintext) % AES.block_size)
     return AES.new(key, AES.MODE_CBC, iv).encrypt(plaintext + ''.join([chr(pad_len) for i in range(pad_len)]))
 
-def decrypt_and_validate_padding(ciphertext):
-    return pkcs7_padding_validator(AES.new(key, AES.MODE_CBC, iv).decrypt(ciphertext))
-
-def pkcs7_padding_validator(msg):
+def pkcs7_padding_validator(msg, strip_mode):
     if ord(msg[len(msg) - 1]) > AES.block_size or ord(msg[len(msg) - 1]) == 0:
         return False
+
     for c in msg[:len(msg) - ord(msg[len(msg) - 1]) - 1 : -1]:
         if c != msg[len(msg) - 1]:
             return False
-    return True
 
-def pkcs7_padding_stripper(msg):
-    if ord(msg[len(msg) - 1]) > AES.block_size or ord(msg[len(msg) - 1]) == 0:
-        raise Exception("invalid pkcs7 padding")
-    for c in msg[:len(msg) - ord(msg[len(msg) - 1]) - 1 : -1]:
-        if c != msg[len(msg) - 1]:
-            raise Exception("invalid pkcs7 padding")
-    return msg[:len(msg) - ord(msg[len(msg) - 1])]
+    return True if not strip_mode else msg[:len(msg) - ord(msg[len(msg) - 1])]
+
+def decrypt_and_validate_padding(ciphertext):
+    return pkcs7_padding_validator(AES.new(key, AES.MODE_CBC, iv).decrypt(ciphertext), False)
 
 ciphertext = iv + encryption_oracle()
 plaintext = ""
@@ -66,4 +60,4 @@ for b_idx in reversed(range((len(ciphertext) / AES.block_size) - 1)):
             for k in range(i + 1):
                 block[AES.block_size - k - 1] = chr(padding[k] ^ (k + 1) ^ (i + 2))
 
-print pkcs7_padding_stripper(plaintext[::-1]).decode("base64")
+print pkcs7_padding_validator(plaintext[::-1], True).decode("base64")

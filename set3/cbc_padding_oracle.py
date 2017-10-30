@@ -28,41 +28,39 @@ def decrypt_and_validate_padding(ciphertext):
 ct1 = iv + encryption_oracle()
 blocks = [ct1[i:i + AES.block_size] for i in range(0, len(ct1), AES.block_size)]
 pt = ""
-
-for block in blocks[::-1][:len(blocks) - 1]:
-
-    b = list(block)#list(blocks[len(blocks) - 2])
+#for block in blocks[::-1][:len(blocks) - 1]:
+#for x in reversed(range(len(blocks) - 2)):
+for x in range(len(blocks) - 1):
+    blocks = [ct1[i:i + AES.block_size] for i in range(0, len(ct1), AES.block_size)]
+    blocks_copy = blocks
+    block = list(blocks_copy[len(blocks_copy) - (x + 2)])
     blep = []
 
     for i in range(AES.block_size):
-        ignore = b[AES.block_size - (i + 1)]
+        ignore = block[AES.block_size - (i + 1)]
         br = False
 
         for j in range(0xff):
             if chr(j) != ignore:
-                b[AES.block_size - (i + 1)] = chr(j)
+                block[AES.block_size - (i + 1)] = chr(j)
+            blocks_copy[len(blocks) - (x + 2)] = ''.join(block)
 
-            blocks[len(blocks) - 2] = ''.join(b)
-
-            if decrypt_and_validate_padding(''.join(blocks)):
+            if decrypt_and_validate_padding(''.join(blocks_copy[:len(blocks_copy) - x])):
                 pt += chr(j ^ ord(ignore) ^ (i + 1))
                 print list(chr(j ^ ord(ignore) ^ (i + 1)))
                 blep.append(j)
-
                 for k in range(i + 1):
-                    b[AES.block_size - (k + 1)] = chr(blep[k] ^ (k + 1) ^ (i + 2))
-
+                    block[AES.block_size - (k + 1)] = chr(blep[k] ^ (k + 1) ^ (i + 2))
                 br = True
                 break
 
         if not br:
             blep.append(ord(ignore))
-
             for k in range(i + 1):
-                b[AES.block_size - (k + 1)] = chr(blep[k] ^ (k + 1) ^ (i + 2))
+                block[AES.block_size - (k + 1)] = chr(blep[k] ^ (k + 1) ^ (i + 2))
             print list("br" + chr(i + 1))
             pt += chr(i + 1)
 
 print pt[::-1]
 print split_file[3]
-print pt[::-1].decode("base64")
+#print pt[::-1].decode("base64")

@@ -7,7 +7,7 @@ def pkcs7_padding(msg):
 def pkcs7_padding_stripper(msg):
     if ord(msg[len(msg) - 1]) > AES.block_size or ord(msg[len(msg) - 1]) == 0:
         raise Exception("invalid pkcs7 padding")
-    for c in msg[:len(msg) - ord(msg[len(msg) - 1]) - 1 : -1]:
+    for c in msg[len(msg) - ord(msg[len(msg) - 1]):]:
         if c != msg[len(msg) - 1]:
             raise Exception("invalid pkcs7 padding")
     return msg[:len(msg) - ord(msg[len(msg) - 1])]

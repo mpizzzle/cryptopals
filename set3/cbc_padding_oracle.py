@@ -10,7 +10,7 @@ def encryption_oracle():
         plaintext = f.read().splitlines()[random.randint(0, 9)]
 
     pad_len = AES.block_size - (len(plaintext) % AES.block_size)
-    return AES.new(key, AES.MODE_CBC, iv).encrypt(plaintext + ''.join([chr(pad_len) for i in range(pad_len)]))
+    return iv + AES.new(key, AES.MODE_CBC, iv).encrypt(plaintext + ''.join([chr(pad_len) for i in range(pad_len)]))
 
 def pkcs7_padding_validation(msg, strip_mode):
     len_pad = ord(msg[len(msg) - 1])
@@ -27,7 +27,7 @@ def pkcs7_padding_validation(msg, strip_mode):
 def padding_oracle(ciphertext):
     return pkcs7_padding_validation(AES.new(key, AES.MODE_CBC, iv).decrypt(ciphertext), False)
 
-ciphertext = iv + encryption_oracle()
+ciphertext = encryption_oracle()
 plaintext = ""
 
 for b_idx in reversed(range((len(ciphertext) / AES.block_size) - 1)):

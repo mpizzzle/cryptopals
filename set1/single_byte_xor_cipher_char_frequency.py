@@ -3,7 +3,7 @@ frequent_letters = "etaoi "
 candidate = ""
 candidate_frequency = 0
 
-for plaintext in [''.join([chr(x ^ ord(a)) for a in hex.decode("hex")]) for x in range(128)]:
+for plaintext in [''.join([chr(x ^ ord(a)) for a in hex.decode("hex")]) for x in range(256)]:
     frequency = sum([plaintext.count(frequent_letters[n]) for n in range(len(frequent_letters))])
 
     if frequency > candidate_frequency:

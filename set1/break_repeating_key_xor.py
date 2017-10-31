@@ -21,7 +21,7 @@ def get_candidate_key_byte(transposed_block):
     candidate = ''
     candidate_frequency = 0
 
-    for c in range(0xff):
+    for c in range(256):
         plaintext = ''.join([chr(c ^ ord(a)) for a in transposed_block])
         frequency = sum([plaintext.count(frequent_letters[n]) for n in range(len(frequent_letters))])
 

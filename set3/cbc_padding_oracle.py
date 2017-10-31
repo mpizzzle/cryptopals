@@ -39,7 +39,7 @@ for b_idx in reversed(range((len(ciphertext) / AES.block_size) - 1)):
         guessed_byte = block[AES.block_size - i - 1]
         found = False
 
-        for c in range(0xff + 1):
+        for c in range(256):
             if chr(c) != guessed_byte:
                 block[AES.block_size - i - 1] = chr(c)
                 blocks[b_idx] = ''.join(block)

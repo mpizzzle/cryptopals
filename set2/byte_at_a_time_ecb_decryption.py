@@ -21,7 +21,7 @@ def find_len_of_padding():
 aaa = buf = "AAAAAAAAAAAAAAA"
 
 for i in range(len(encryption_oracle('')) - find_len_of_padding()):
-    dict = {encryption_oracle(aaa[i:] + chr(j))[:AES.block_size] : chr(j) for j in range(0xff)}
+    dict = {encryption_oracle(aaa[i:] + chr(j))[:AES.block_size] : chr(j) for j in range(256)}
     cipher = encryption_oracle(buf[i % AES.block_size:])
     aaa += dict[cipher[AES.block_size * (i / AES.block_size) : AES.block_size * ((i + AES.block_size) / AES.block_size)]]
 

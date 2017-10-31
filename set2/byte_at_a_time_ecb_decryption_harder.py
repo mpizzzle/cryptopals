@@ -49,7 +49,7 @@ buf = aaa = "AAAAAAAAAAAAAAA"
 aa = ''.join("A" for i in range(mod))
 
 for i in range(len(encryption_oracle('')) - prefix - len_of_padding()):
-    dict = {encryption_oracle(aa + aaa[i:] + chr(j))[mod + prefix : mod + prefix + AES.block_size] : chr(j) for j in range(0xff)}
+    dict = {encryption_oracle(aa + aaa[i:] + chr(j))[mod + prefix : mod + prefix + AES.block_size] : chr(j) for j in range(256)}
     cipher = encryption_oracle(aa + buf[i % AES.block_size:])
     aaa += dict[cipher[mod + prefix + (AES.block_size * (i / AES.block_size)) : mod + prefix + (AES.block_size * ((i + AES.block_size) / AES.block_size))]]
 

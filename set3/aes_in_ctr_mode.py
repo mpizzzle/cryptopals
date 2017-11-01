@@ -1,5 +1,5 @@
 from Crypto.Cipher import AES
-
+from Crypto.Util import Counter
 ciphertext = "L77na/nrFsKvynd6HzOoG7GHTLXsTVu9qvY/2syLXzhPweyyMTJULu/6/kXX0KSvoOLSFQ==".decode("base64")
 key = "YELLOW SUBMARINE"
 nonce = ''.join(['\x00' for i in range(AES.block_size / 2)])
@@ -16,3 +16,4 @@ def encrypt(ciphertext, key, nonce):
     return plaintext
 
 print encrypt(encrypt(encrypt(ciphertext, key, nonce), key, nonce), key, nonce)
+print AES.new(key, AES.MODE_CTR, counter=Counter.new(64,initial_value=0,little_endian=True,prefix=nonce)).encrypt(ciphertext)

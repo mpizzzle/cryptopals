@@ -24,6 +24,5 @@ def drag_crib(crib, a_xor_b):
     print derp
 
 for i in range(40):
-    if i != 5:
         print i
-        drag_crib("r polite ", xor(ciphertexts[i], ciphertexts[5]))
+        drag_crib("or polite meaningless ", xor(ciphertexts[i], ciphertexts[5]))

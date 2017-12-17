@@ -1,3 +1,6 @@
+import time
+import random
+
 class mersenne_twister:
     #Initialize the generator from a seed
     def __init__(self, seed):
@@ -37,6 +40,19 @@ class mersenne_twister:
             self.MT[i] = self.MT[(i + 397) % 624] ^ xA
         self.index = 0
 
-mt = mersenne_twister(5489)
-for i in range(1000):
-    print mt.extract_number()
+secret_seed = int(time.time())
+time.sleep(random.randint(40, 1000))
+secret_seed_output = mersenne_twister(secret_seed).extract_number()
+print secret_seed_output
+
+current_time = int(time.time())
+cracked_seed = 0
+
+for i in range(1001):
+    if mersenne_twister(current_time - i).extract_number() == secret_seed_output:
+        cracked_seed = current_time - i
+        break
+
+print mersenne_twister(cracked_seed).extract_number()
+print cracked_seed
+print secret_seed == cracked_seed

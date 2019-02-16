@@ -1,8 +1,8 @@
 def _int32(x):
     # Get the 32 least significant bits.
-    return int(0xFFFFFFFF & x)
+    return int(0xffffffff & x)
 
-class MT19937:
+class MersenneTwister:
 
     def __init__(self, seed):
         # Initialize the index to 0
@@ -12,6 +12,9 @@ class MT19937:
         for i in range(1, 624):
             self.mt[i] = _int32(
                 1812433253 * (self.mt[i - 1] ^ self.mt[i - 1] >> 30) + i)
+
+    def set_state(self, cloned_state):
+        self.mt = cloned_state
 
     def extract_number(self):
         if self.index >= 624:
@@ -43,7 +46,3 @@ class MT19937:
             if y % 2 != 0:
                 self.mt[i] = self.mt[i] ^ 0x9908b0df
         self.index = 0
-        #test
-
-mt = MT19937(0)
-print mt.extract_number()

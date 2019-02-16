@@ -44,15 +44,12 @@ class MT19937:
                 self.mt[i] = self.mt[i] ^ 0x9908b0df
         self.index = 0
 
-#todo: rewrite this function now you have a better grasp on it.
 def untemper_11(yy):
-    y = _int32(yy)
-    temp1 = y >> (32 - 11)
-    temp2 = (y & 0x1fffff) >> (32 - 11 - 11)
-    temp3 = temp1 ^ temp2
-    temp4 = int(str(format(temp1, '#011b')) + str(format(temp3, '011b')), 2) >> 1
-    temp5 = temp4 ^ y
-    return _int32(temp5)
+    y = yy ^ ((yy & 0xffe00000) >> 11)
+    y = yy ^ ((y & 0xfffffc00) >> 11)
+    y = yy ^ ((y & 0xffffffff) >> 11)
+    
+    return _int32(y)
 
 def untemper_7(yy):
     y = yy ^ (((yy & 0x7f) << 7) & 2636928640)

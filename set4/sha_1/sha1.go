@@ -8,10 +8,6 @@
 // applications.
 package sha_1
 
-//func init() {
-//	crypto.RegisterHash(crypto.SHA1, New)
-//}
-
 // The size of a SHA-1 checksum in bytes.
 const Size = 20
 
@@ -52,15 +48,6 @@ func (d *digest) Reset() {
 	d.len = 0
 }
 
-// New returns a new hash.Hash computing the SHA1 checksum. The Hash also
-// implements encoding.BinaryMarshaler and encoding.BinaryUnmarshaler to
-// marshal and unmarshal the internal state of the hash.
-//func New() hash.Hash {
-//	d := new(digest)
-//	d.Reset()
-//	return d
-//}
-
 func (d *digest) Size() int { return Size }
 
 func (d *digest) BlockSize() int { return BlockSize }
@@ -87,13 +74,6 @@ func (d *digest) Write(p []byte) (nn int, err error) {
 	}
 	return
 }
-
-//func (d *digest) Sum(in []byte) []byte {
-//	// Make a copy of d so that caller can keep writing and summing.
-//	d0 := *d
-//	hash := d0.checkSum()
-//	return append(in, hash[:]...)
-//}
 
 func (d *digest) checkSum() [Size]byte {
 	len := d.len

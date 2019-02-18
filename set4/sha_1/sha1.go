@@ -114,6 +114,23 @@ func Sum(data []byte) [Size]byte {
 	return d.checkSum()
 }
 
+func (d *digest) ResetForged(registers [5]uint32) {
+	d.h[0] = registers[0]
+	d.h[1] = registers[1]
+	d.h[2] = registers[2]
+	d.h[3] = registers[3]
+	d.h[4] = registers[4]
+	d.nx = 0
+	d.len = 0
+}
+
+func SumForged(data []byte, registers [5]uint32) [Size]byte {
+	var d digest
+	d.ResetForged(registers)
+	d.Write(data)
+	return d.checkSum()
+}
+
 func putUint64(x []byte, s uint64) {
 	_ = x[7]
 	x[0] = byte(s >> 56)

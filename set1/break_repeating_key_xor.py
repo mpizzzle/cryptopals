@@ -40,11 +40,8 @@ def get_key(file):
     transposed_blocks = [''.join([block[x] for block in split_file[:len(split_file) - 1]]) for x in range(key_length)]
     return ''.join([get_candidate_key_byte(block) for block in transposed_blocks])
 
-with open('files/6.txt') as f:
-    file = f.read().decode("base64")
-
-with open('files/p059_cipher.txt') as f2:
-    project_euler_59 = ''.join([chr(int(c)) for c in f2.read().split(',')])
+file = open('files/6.txt').read().decode("base64")
+project_euler_59 = ''.join([chr(int(c)) for c in open('files/p059_cipher.txt').read().split(',')])
 
 key1 = get_key(file)
 key2 = get_key(project_euler_59)

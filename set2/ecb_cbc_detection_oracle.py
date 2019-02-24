@@ -27,8 +27,7 @@ def encryption_oracle(msg):
 
     return ciphertext
 
-with open('files/10_decrypted.txt') as f:
-    ciphertext = encryption_oracle(f.read())
+ciphertext = encryption_oracle(open('files/10_decrypted.txt').read())
 
 blocks = [ciphertext[i:i + AES.block_size] for i in range(0, len(ciphertext), AES.block_size)]
 

@@ -88,7 +88,7 @@ func (d *digest) checkSum() [Size]byte {
 
 	// Length in bits.
 	len <<= 3
-	putUint64(tmp[:], len)
+	PutUint64(tmp[:], len)
 	d.Write(tmp[0:8])
 
 	if d.nx != 0 {
@@ -131,7 +131,7 @@ func SumForged(data []byte, registers [5]uint32) [Size]byte {
 	return d.checkSum()
 }
 
-func putUint64(x []byte, s uint64) {
+func PutUint64(x []byte, s uint64) {
 	_ = x[7]
 	x[0] = byte(s >> 56)
 	x[1] = byte(s >> 48)

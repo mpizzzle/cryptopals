@@ -1,7 +1,6 @@
 from Crypto.Cipher import AES
 
-with open('files/10.txt') as f:
-    file = f.read().decode("base64")
+file = open('files/10.txt') .read().decode("base64")
 
 split_file = [file[i:i + AES.block_size] for i in range(0, len(file), AES.block_size)]
 key = "YELLOW SUBMARINE"

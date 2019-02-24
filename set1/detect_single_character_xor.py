@@ -1,5 +1,4 @@
-with open('files/4.txt') as f:
-    hex_strings = f.read().splitlines()
+hex_strings = open('files/4.txt') .read().splitlines()
 
 for hex in hex_strings:
     for plaintext in [''.join([chr(x ^ ord(a)) for a in hex.decode("hex")]) for x in range(256)]:

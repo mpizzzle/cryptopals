@@ -17,12 +17,10 @@ def drag_crib(crib, a_xor_b):
     derp = []
     for n in range(len(a_xor_b) - len(crib) + 1):
         potential = xor(crib, a_xor_b[n : n + len(crib)])
-
-        #if all(x.isalpha() or x.isspace() for x in potential):
-        #    if crib not in potential:
         derp.append(potential)
+
     print derp
 
 for i in range(40):
-        print i
+        #the string below was the result of half an hour of manual crib dragging
         drag_crib("or polite meaningless ", xor(ciphertexts[i], ciphertexts[5]))

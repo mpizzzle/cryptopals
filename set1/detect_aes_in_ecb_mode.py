@@ -1,7 +1,6 @@
 from sets import Set
 
-with open('files/8.txt') as f:
-    file = f.read().splitlines()
+file = open('files/8.txt').read().splitlines()
 
 for ciphertext in file:
     charlist = [0 for x in range(256)]

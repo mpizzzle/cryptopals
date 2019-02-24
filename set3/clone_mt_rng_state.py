@@ -1,3 +1,4 @@
+from random import randint
 from mt19937 import MersenneTwister
 
 def _int32(x):
@@ -38,7 +39,7 @@ def untemper(yy):
     y = untemper_11(y)
     return _int32(y)
 
-unknown_seed = 12668778
+unknown_seed = randint(0, 0xffffffff)
 mt = MersenneTwister(unknown_seed)
 
 cloned_mt_state = [0] * 624

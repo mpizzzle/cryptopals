@@ -1,5 +1,4 @@
-with open('files/4.txt') as f:
-    hex_strings = f.read().splitlines()
+hex_strings = open('files/4.txt').read().splitlines()
 
 frequent_letters = "etaoi "
 candidate = ""
